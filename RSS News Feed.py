@@ -3,14 +3,13 @@ import requests
 import pandas as pd
 
 
-
 def news_covid_RSS(url):
     resp = requests.get(url)
     if (resp.status_code==200):
         resp_text = resp.text
         soup = BeautifulSoup(resp_text,'xml')
         items = soup.findAll('item')
-        lst_link=[]
+        lst_link = []
         lst_des=[]
         for item in items:
             str1=item.description.text
