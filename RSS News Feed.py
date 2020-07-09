@@ -27,5 +27,3 @@ def news_covid_RSS(url):
 if __name__ == "__main__":
     url = 'http://news.google.com/news?q=covid-19&hl=en-US&sort=date&gl=US&num=100&output=rss'
     news_covid_RSS(url)
-    
-
