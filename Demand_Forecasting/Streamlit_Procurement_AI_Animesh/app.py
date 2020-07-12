@@ -2,11 +2,6 @@ import pandas as pd
 import streamlit as st
 import about
 import itertools
-# import numpy as np
-# import seaborn as sb
-# import matplotlib.pyplot as plt
-# from scipy.stats import norm, skew #for some statistics
-# from scipy import stats #qqplot
 import statsmodels.api as sm #for decomposing the trends, seasonality etc.
 from statsmodels.tsa.statespace.sarimax import SARIMAX #the big daddy
 from plotly.offline import iplot, init_notebook_mode
@@ -16,18 +11,27 @@ init_notebook_mode(connected=True)
 import plotly
 import plotly.graph_objs as go
 import os
+import warnings
+from fbprophet import Prophet
+from fbprophet.plot import add_changepoints_to_plot
+from fbprophet.diagnostics import cross_validation
+from fbprophet.diagnostics import performance_metrics
+from fbprophet.plot import plot_cross_validation_metric
+import matplotlib.pyplot as plt
+warnings.filterwarnings("ignore")
+plt.style.use('seaborn')
 
-# Get JMETER_HOME environment variable
-# print('ANi')
-def main_about():
-    st.title('About')
-    st.markdown('---')
-    #Display About section
+
+# def main_about():
+#     st.title('About')
+#     st.markdown('---')
+#     #Display About section
+
 
 
 def EDA_Warehouse_Demnds(df_final):
 
-    st.header ('Plotting the Time Series Data for different warehouses')
+    st.markdown('## Plotting the **Time Series** Data for warehouses')
 
     # Create traces
     trace0 = go.Scatter(
@@ -68,7 +72,7 @@ def EDA_Warehouse_Demnds(df_final):
     data = [trace0, trace1, trace2, trace3]
 
 
-    layout = dict(title = 'Plot for Warehouse Demands',
+    layout = dict(title = 'Warehouse Demands - Daily',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
 
@@ -80,7 +84,7 @@ def EDA_Warehouse_Demnds(df_final):
     df_resamp = df_final.resample('W', on = 'Date').sum()
     df_resamp = df_resamp.reset_index()
 
-    st.header('Weekly Warhouse Demand')
+    # st.header('Weekly Warhouse Demand')
 
     # Create traces
     trace0 = go.Scatter(
@@ -121,7 +125,7 @@ def EDA_Warehouse_Demnds(df_final):
     data = [trace0, trace1, trace2, trace3]
 
 
-    layout = dict(title = 'Plot for Warehouse Demands - Weekly',
+    layout = dict(title = 'Warehouse Demands - Weekly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
 
@@ -129,7 +133,7 @@ def EDA_Warehouse_Demnds(df_final):
     fig = dict(data = data, layout = layout)
     st.plotly_chart(fig)
 
-    st.header ('Monthly Warehouse Demand')
+    # st.header ('Monthly Warehouse Demand')
 
     df_month = df_final.resample('M', on = 'Date').sum()
     df_month = df_month.reset_index()
@@ -172,7 +176,7 @@ def EDA_Warehouse_Demnds(df_final):
     data = [trace0, trace1, trace2, trace3]
 
 
-    layout = dict(title = 'Plot for Warehouse Demands - Monthly',
+    layout = dict(title = 'Warehouse Demands - Monthly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
 
@@ -190,7 +194,7 @@ def seasonality(df_final):
 
     df_month = df_month.set_index('Date')
 
-    st.header('Seasonality Plot for Warehouse A')
+    st.markdown(' ## Seasonality Plot for different warehouses')
 
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_A'], model='additive')
 
@@ -246,7 +250,7 @@ def seasonality(df_final):
     st.plotly_chart(fig)
 
 
-    st.header('Seasonality Plot for Warehouse J')
+    # st.header('Seasonality Plot for Warehouse J')
 
     # Create traces
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_J'], model='additive')
@@ -302,7 +306,7 @@ def seasonality(df_final):
     fig = dict(data = data, layout = layout)
     st.plotly_chart(fig)
 
-    st.header('Seasonality Plot for Warehouse C')
+    # st.header('Seasonality Plot for Warehouse C')
 
     # Create traces
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_C'], model='additive')
@@ -358,7 +362,7 @@ def seasonality(df_final):
     fig = dict(data = data, layout = layout)
     st.plotly_chart(fig)
 
-    st.header('Seasonality Plot for Warehouse S')
+    # st.header('Seasonality Plot for Warehouse S')
     # Create traces
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_S'], model='additive')
 
@@ -416,7 +420,7 @@ def seasonality(df_final):
 
 def ARIMA_model(df_final):
 
-    st.header('ARIMA on Warehouse A')
+    st.markdown('## ARIMA on Warehouse A')
     df_month = df_final.resample('M', on = 'Date').sum()
     df_month = df_month.reset_index()
 
@@ -484,7 +488,7 @@ def ARIMA_model(df_final):
     data = [trace0, trace1]
 
 
-    layout = dict(title = 'Plot for Warehouse A - SARIMAX',
+    layout = dict(title = 'Warehouse A - Actual vs Predicted',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
 
@@ -594,18 +598,147 @@ def ARIMA_model(df_final):
     st.plotly_chart(fig)
     return 0
 
+def prophet(df_final):
 
+    # df = pd.read_csv(df_final,parse_dates=['Date'],infer_datetime_format=True)
+    # df= df.drop('Unnamed: 0',axis=1)
+
+    df_warehouse_s = df_final[['Date', 'Order_Demand_Whse_S']]
+    df_s = df_warehouse_s.rename(columns={"Date": "ds", "Order_Demand_Whse_S": "y"})
+    prophet = Prophet(yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False,)
+    prophet.fit(df_s)
+    future = prophet.make_future_dataframe(periods=12, freq='M')
+    df_forecast = prophet.predict(future)
+    st.markdown('## Demand Forecasting using FbProphet')
+    trace = go.Scatter(
+        name = 'Actual Demand Quantity',
+        mode = 'markers',
+        x = list(df_s['ds']),
+        y = list(df_s['y']),
+        marker=dict(
+            color='#FFBAD2',
+            line=dict(width=1)
+        )
+    )
+    trace1 = go.Scatter(
+        name = 'trend',
+        mode = 'lines',
+        x = list(df_forecast['ds']),
+        y = list(df_forecast['yhat']),
+        marker=dict(
+            color='red',
+            line=dict(width=3)
+        )
+    )
+    upper_band = go.Scatter(
+        name = 'upper band',
+        mode = 'lines',
+        x = list(df_forecast['ds']),
+        y = list(df_forecast['yhat_upper']),
+        line= dict(color='#57b88f'),
+        fill = 'tonexty'
+    )
+    lower_band = go.Scatter(
+        name= 'lower band',
+        mode = 'lines',
+        x = list(df_forecast['ds']),
+        y = list(df_forecast['yhat_lower']),
+        line= dict(color='#1705ff')
+    )
+    tracex = go.Scatter(
+        name = 'Actual price',
+       mode = 'markers',
+       x = list(df_s['ds']),
+       y = list(df_s['y']),
+       marker=dict(
+          color='black',
+          line=dict(width=2)
+       )
+    )
+    data = [trace1, lower_band, upper_band, trace]
+
+    layout = dict(title='Order Demand Forecasting - Warehouse S',
+                 xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
+                  yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True))
+
+    fig=dict(data=data,layout=layout)
+    # plt.savefig('btc03.html')
+    st.plotly_chart(fig)
+
+
+    df_warehouse_j = df_final[['Date', 'Order_Demand_Whse_J']]
+    df_j = df_warehouse_j.rename(columns={"Date": "ds", "Order_Demand_Whse_J": "y"})
+    prophet = Prophet(yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False,)
+    prophet.fit(df_j)
+    future = prophet.make_future_dataframe(periods=12, freq='M')
+    df_forecast = prophet.predict(future)
+
+    trace = go.Scatter(
+        name = 'Actual Demand Quantity',
+        mode = 'markers',
+        x = list(df_j['ds']),
+        y = list(df_j['y']),
+        marker=dict(
+            color='#FFBAD2',
+            line=dict(width=1)
+        )
+    )
+    trace1 = go.Scatter(
+        name = 'trend',
+        mode = 'lines',
+        x = list(df_forecast['ds']),
+        y = list(df_forecast['yhat']),
+        marker=dict(
+            color='red',
+            line=dict(width=3)
+        )
+    )
+    upper_band = go.Scatter(
+        name = 'upper band',
+        mode = 'lines',
+        x = list(df_forecast['ds']),
+        y = list(df_forecast['yhat_upper']),
+        line= dict(color='#57b88f'),
+        fill = 'tonexty'
+    )
+    lower_band = go.Scatter(
+        name= 'lower band',
+        mode = 'lines',
+        x = list(df_forecast['ds']),
+        y = list(df_forecast['yhat_lower']),
+        line= dict(color='#1705ff')
+    )
+    tracex = go.Scatter(
+        name = 'Actual price',
+       mode = 'markers',
+       x = list(df_j['ds']),
+       y = list(df_j['y']),
+       marker=dict(
+          color='black',
+          line=dict(width=2)
+       )
+    )
+    data = [trace1, lower_band, upper_band, trace]
+
+    layout = dict(title='Order Demand Forecasting - Warehouse J',
+                 xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
+                  yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True))
+
+    fig=dict(data=data,layout=layout)
+    # plt.savefig('btc03.html')
+    st.plotly_chart(fig)
+    return 0
 
 def demand_forecast(file_csv):
 
     print(file_csv)
 
     selected_filename = st.selectbox('Load a file to execute',file_csv)
-    st.write('You selected `%s`' % selected_filename + '. To execute this test plan, click on Run button as shown below.')
+    st.write('You selected `%s`' % selected_filename + '. To perform operations on this file, select your desired operation')
     df_final = pd.read_csv(selected_filename,parse_dates=['Date'],infer_datetime_format=True)
 
-    buttons = ['View EDA','View Seasonality','Forecast Using ARIMA Model']
-    check=st.selectbox('Select Operation', buttons, index=0, key=None)
+    buttons = ['View EDA','View Seasonality','Forecast using ARIMA model','Forecast using FbProphet','None']
+    check=st.selectbox('Select Operation', buttons, index=4, key=None)
 
     if check==('View EDA'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
@@ -613,10 +746,12 @@ def demand_forecast(file_csv):
     if check==('View Seasonality'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
         seasonality(df_final)
-    if check==('Forecast Using ARIMA Model'):
+    if check==('Forecast using ARIMA model'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
         ARIMA_model(df_final)
-
+    if check==('Forecast using FbProphet'):
+        st.spinner('Execution has started, you can monitor the stats in the command prompt.')
+        prophet(df_final)
 
     return 0
 
@@ -651,19 +786,19 @@ def main():
            </div>
         """
         st.markdown(html_temp,unsafe_allow_html=True)
-        cat_level1 =['Category Analytics','Spend Analytics','Savings Lifecycle Analytics']
-        a = st.radio('', cat_level1,index=0,key=None)
+        cat_level1 =['Category Analytics','Spend Analytics','Savings Lifecycle Analytics','None']
+        a = st.radio('', cat_level1,index=3,key=None)
         if a == 'Category Analytics':
-            cat_level2 =['Classification','Consumption Analysis']
+            cat_level2 =['Classification','Consumption Analysis','None']
 
-            b=st.multiselect('Select Sublevel', cat_level2,key=None,default=['Consumption Analysis'])
+            b=st.multiselect('Select Sublevel', cat_level2,default=['None'])
             st.write('You selected `%s`' % b[0])
 
             if b[0] == 'Consumption Analysis':
                 st.header('Demand Forecasting')
                 demand_forecast(file_csv)
 
-        # about.display_about()
+
 
     return 0
 
