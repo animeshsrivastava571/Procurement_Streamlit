@@ -12,11 +12,20 @@ def display_about():
     st.markdown('''Procurement.AI is an initiative by COE Data Science at HCL to create an
     end to end ML based tool for Supply Chain in the domain of procurement'''
                 )
+    st.text("")
+    st.text("")
     
-    img = Image.open('Img3.PNG')
+    img = Image.open('Img4.PNG')
     st.image(img,width=800)
-    st.markdown('### Limitations')
+    st.text("")
+    st.text("")
+    st.markdown('## Limitations')
     st.markdown('* Supports only CSV as input')
+    st.text("")
+    st.text("")
+    st.markdown('### Watch how HCL is a global leader in the AI space')
+    st.text("")
+    st.video('https://www.youtube.com/watch?v=b-U9uIMFT2U&feature=youtu.be')
     # st.markdown('* By default, it fetches all the files from the `JMETER_HOME` folder.')
     # st.markdown('* Limited number of charts has been added, other type of charts can be added by custom coding.')
     # st.markdown('* Doesn\'t support distributed load testing model.')
@@ -37,3 +46,4 @@ def display_sidebar():
                     'using [Python](https://www.python.org/),
     [Streamlit](https://streamlit.io/), and [Plotly](https://plotly.com/python/)
                     ''')
+

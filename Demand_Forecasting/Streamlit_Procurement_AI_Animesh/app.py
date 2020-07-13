@@ -183,6 +183,29 @@ def EDA_Warehouse_Demnds(df_final):
                  )
     fig = dict(data = data, layout = layout)
     st.plotly_chart(fig)
+
+
+    lst_warehouse=list(df_final.columns)[2:]
+    traces = []
+
+    for whouse in lst_warehouse:
+        s = df_final[whouse].to_frame().reset_index(drop=True)
+        trace = go.Box(y= s[whouse], name= 'Warehouse {}'.format(whouse), jitter=0.8, whiskerwidth=0.2, marker=dict(size=2), line=dict(width=1))
+        traces.append(trace)
+
+    layout = go.Layout(
+    title='Order Demand Boxpot Across Different Warehouses',
+    yaxis=dict(
+        autorange=True, showgrid=True, zeroline=True,
+        gridcolor='rgb(233,233,233)', zerolinecolor='rgb(255, 255, 255)',
+        zerolinewidth=2, gridwidth=1),
+    xaxis=dict(tickangle=15),
+    margin=dict(l=40, r=30, b=80, t=100), showlegend=False,
+    )
+
+
+    fig = go.Figure(data=traces, layout=layout)
+    st.plotly_chart(fig)
     return 0
 
 def seasonality(df_final):
@@ -738,7 +761,7 @@ def demand_forecast(file_csv):
     df_final = pd.read_csv(selected_filename,parse_dates=['Date'],infer_datetime_format=True)
 
     buttons = ['View EDA','View Seasonality','Forecast using ARIMA model','Forecast using FbProphet','None']
-    check=st.selectbox('Select Operation', buttons, index=4, key=None)
+    check=st.selectbox('Select Operation', buttons, index=0, key=None)
 
     if check==('View EDA'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
@@ -786,18 +809,17 @@ def main():
            </div>
         """
         st.markdown(html_temp,unsafe_allow_html=True)
-        cat_level1 =['Category Analytics','Spend Analytics','Savings Lifecycle Analytics','None']
-        a = st.radio('', cat_level1,index=3,key=None)
+        cat_level1 =['Category Analytics','Spend Analytics','Savings Lifecycle Analytics']
+        a = st.radio('', cat_level1,index=0,key=None)
         if a == 'Category Analytics':
             cat_level2 =['Classification','Consumption Analysis','None']
 
-            b=st.multiselect('Select Sublevel', cat_level2,default=['None'])
+            b=st.multiselect('Select Sublevel', cat_level2,default=['Classification'])
             st.write('You selected `%s`' % b[0])
 
             if b[0] == 'Consumption Analysis':
                 st.header('Demand Forecasting')
                 demand_forecast(file_csv)
-
 
 
     return 0
