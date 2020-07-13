@@ -22,6 +22,11 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def prophet(df_final):
+    """
+
+    :param df_final:
+    :return:
+    """
 
     df = pd.read_csv('Ani1.csv',parse_dates=['Date'],infer_datetime_format=True)
     df= df.drop('Unnamed: 0',axis=1)

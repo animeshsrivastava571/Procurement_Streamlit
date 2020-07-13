@@ -33,6 +33,30 @@ def EDA_Warehouse_Demnds(df_final):
 
     st.markdown('## Plotting the **Time Series** Data for warehouses')
 
+    lst_warehouse=list(df_final.columns)[2:]
+    traces = []
+
+    for whouse in lst_warehouse:
+        s = df_final[whouse].to_frame().reset_index(drop=True)
+        trace = go.Box(y= s[whouse], name= 'Warehouse {}'.format(whouse), jitter=0.8, whiskerwidth=0.2, marker=dict(size=2), line=dict(width=1))
+        traces.append(trace)
+
+    layout = go.Layout(
+    title='Order Demand Boxpot Across Different Warehouses',
+    yaxis=dict(
+        autorange=True, showgrid=True, zeroline=True,
+        gridcolor='rgb(233,233,233)', zerolinecolor='rgb(255, 255, 255)',
+        zerolinewidth=2, gridwidth=1),
+    xaxis=dict(tickangle=15),
+    margin=dict(l=40, r=30, b=80, t=100), showlegend=False,
+    width=900,
+                height=500
+    )
+
+
+    fig = go.Figure(data=traces, layout=layout)
+    st.plotly_chart(fig)
+
     # Create traces
     trace0 = go.Scatter(
         x = df_final['Date'],
@@ -75,6 +99,8 @@ def EDA_Warehouse_Demnds(df_final):
     layout = dict(title = 'Warehouse Demands - Daily',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -128,6 +154,8 @@ def EDA_Warehouse_Demnds(df_final):
     layout = dict(title = 'Warehouse Demands - Weekly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -179,33 +207,15 @@ def EDA_Warehouse_Demnds(df_final):
     layout = dict(title = 'Warehouse Demands - Monthly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
     st.plotly_chart(fig)
 
 
-    lst_warehouse=list(df_final.columns)[2:]
-    traces = []
 
-    for whouse in lst_warehouse:
-        s = df_final[whouse].to_frame().reset_index(drop=True)
-        trace = go.Box(y= s[whouse], name= 'Warehouse {}'.format(whouse), jitter=0.8, whiskerwidth=0.2, marker=dict(size=2), line=dict(width=1))
-        traces.append(trace)
-
-    layout = go.Layout(
-    title='Order Demand Boxpot Across Different Warehouses',
-    yaxis=dict(
-        autorange=True, showgrid=True, zeroline=True,
-        gridcolor='rgb(233,233,233)', zerolinecolor='rgb(255, 255, 255)',
-        zerolinewidth=2, gridwidth=1),
-    xaxis=dict(tickangle=15),
-    margin=dict(l=40, r=30, b=80, t=100), showlegend=False,
-    )
-
-
-    fig = go.Figure(data=traces, layout=layout)
-    st.plotly_chart(fig)
     return 0
 
 def seasonality(df_final):
@@ -267,6 +277,8 @@ def seasonality(df_final):
     layout = dict(title = 'Plot for Warehouse A - Seasonality',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -324,6 +336,8 @@ def seasonality(df_final):
     layout = dict(title = 'Plot for Warehouse J - Seasonality',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -380,6 +394,8 @@ def seasonality(df_final):
     layout = dict(title = 'Plot for Warehouse C - Seasonality',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -435,6 +451,8 @@ def seasonality(df_final):
     layout = dict(title = 'Plot for Warehouse S - Seasonality',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                  height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -443,7 +461,7 @@ def seasonality(df_final):
 
 def ARIMA_model(df_final):
 
-    st.markdown('## ARIMA on Warehouse A')
+    st.markdown('## SARIMA on Warehouse A')
     df_month = df_final.resample('M', on = 'Date').sum()
     df_month = df_month.reset_index()
 
@@ -514,6 +532,8 @@ def ARIMA_model(df_final):
     layout = dict(title = 'Warehouse A - Actual vs Predicted',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -615,6 +635,8 @@ def ARIMA_model(df_final):
     layout = dict(title = 'Warehouse A Forecast',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                  width=900,
+                height=500
 
                  )
     fig = dict(data = data, layout = layout)
@@ -640,7 +662,8 @@ def prophet(df_final):
         y = list(df_s['y']),
         marker=dict(
             color='#FFBAD2',
-            line=dict(width=1)
+            line=dict(width=1),
+            size=2
         )
     )
     trace1 = go.Scatter(
@@ -650,7 +673,7 @@ def prophet(df_final):
         y = list(df_forecast['yhat']),
         marker=dict(
             color='red',
-            line=dict(width=3)
+            line=dict(width=10)
         )
     )
     upper_band = go.Scatter(
@@ -682,7 +705,9 @@ def prophet(df_final):
 
     layout = dict(title='Order Demand Forecasting - Warehouse S',
                  xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
-                  yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True))
+                  yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True),
+                   width=900,
+                height=500)
 
     fig=dict(data=data,layout=layout)
     # plt.savefig('btc03.html')
@@ -703,7 +728,8 @@ def prophet(df_final):
         y = list(df_j['y']),
         marker=dict(
             color='#FFBAD2',
-            line=dict(width=1)
+            line=dict(width=1),
+            size=2
         )
     )
     trace1 = go.Scatter(
@@ -713,7 +739,7 @@ def prophet(df_final):
         y = list(df_forecast['yhat']),
         marker=dict(
             color='red',
-            line=dict(width=3)
+            line=dict(width=10)
         )
     )
     upper_band = go.Scatter(
@@ -723,6 +749,8 @@ def prophet(df_final):
         y = list(df_forecast['yhat_upper']),
         line= dict(color='#57b88f'),
         fill = 'tonexty'
+        # fillcolor='#E0F2F3',
+        # opacity=0.1
     )
     lower_band = go.Scatter(
         name= 'lower band',
@@ -745,7 +773,9 @@ def prophet(df_final):
 
     layout = dict(title='Order Demand Forecasting - Warehouse J',
                  xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
-                  yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True))
+                  yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True),
+                  width=900,
+                height=500)
 
     fig=dict(data=data,layout=layout)
     # plt.savefig('btc03.html')
@@ -760,7 +790,7 @@ def demand_forecast(file_csv):
     st.write('You selected `%s`' % selected_filename + '. To perform operations on this file, select your desired operation')
     df_final = pd.read_csv(selected_filename,parse_dates=['Date'],infer_datetime_format=True)
 
-    buttons = ['View EDA','View Seasonality','Forecast using ARIMA model','Forecast using FbProphet','None']
+    buttons = ['View EDA','View Seasonality','Forecast using SARIMA','Forecast using FbProphet','None']
     check=st.selectbox('Select Operation', buttons, index=0, key=None)
 
     if check==('View EDA'):
@@ -769,7 +799,7 @@ def demand_forecast(file_csv):
     if check==('View Seasonality'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
         seasonality(df_final)
-    if check==('Forecast using ARIMA model'):
+    if check==('Forecast using SARIMA'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
         ARIMA_model(df_final)
     if check==('Forecast using FbProphet'):
@@ -814,11 +844,18 @@ def main():
         if a == 'Category Analytics':
             cat_level2 =['Classification','Consumption Analysis','None']
 
-            b=st.multiselect('Select Sublevel', cat_level2,default=['Classification'])
-            st.write('You selected `%s`' % b[0])
+            b=st.selectbox('Select Sublevel', cat_level2,index=0)
+            st.write('You selected `%s`' % b)
 
-            if b[0] == 'Consumption Analysis':
+            if b == 'Consumption Analysis':
                 st.header('Demand Forecasting')
+                st.markdown('''
+                For the monthly demand for each product in different central  warehouse
+                - Products are manufactured in different loaction all over the world
+                - Takes more than one month to ship products via ocean to different central ware houses
+                
+                The task is to do a **Demand Forecast** of across multiple warehouses
+                ''')
                 demand_forecast(file_csv)
 
 

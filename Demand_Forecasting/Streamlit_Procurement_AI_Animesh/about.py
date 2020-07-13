@@ -23,7 +23,7 @@ def display_about():
     st.markdown('* Supports only CSV as input')
     st.text("")
     st.text("")
-    st.markdown('### Watch how HCL is a global leader in the AI space')
+    st.markdown('### Watch how HCL aims to become a Global Leader in the AI space')
     st.text("")
     st.video('https://www.youtube.com/watch?v=b-U9uIMFT2U&feature=youtu.be')
     # st.markdown('* By default, it fetches all the files from the `JMETER_HOME` folder.')
