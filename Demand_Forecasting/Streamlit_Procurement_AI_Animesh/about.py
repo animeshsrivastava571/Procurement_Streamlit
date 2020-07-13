@@ -43,7 +43,7 @@ def display_sidebar():
     st.sidebar.info('This is a WIP product by the COE Data Science and subsequent features will be added')
     st.sidebar.title('About')
     st.sidebar.info('''This app has been developed by the [COE Data Science team](https://hcl.com)
-                    'using [Python](https://www.python.org/),
+                    using [Python](https://www.python.org/),
     [Streamlit](https://streamlit.io/), and [Plotly](https://plotly.com/python/)
                     ''')
 
