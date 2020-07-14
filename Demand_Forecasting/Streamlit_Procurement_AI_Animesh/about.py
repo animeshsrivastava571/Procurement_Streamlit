@@ -4,7 +4,7 @@ import base64
 
 def display_about():
     st.title('Procurement.AI')
-    st.markdown('<style>h1{color: black;}</style>', unsafe_allow_html=True)
+    st.markdown('<style>h1{color: #B51E60 ;}</style>', unsafe_allow_html=True)
     st.text('Created by animesh.sr@hcl.com')
     # img = Image.open('Img2.jpg')
     # st.image(img,use_column_width=True)
@@ -29,7 +29,7 @@ def display_about():
     st.text("")
     st.text("")
     
-    img = Image.open('ppt.PNG')
+    img = Image.open('Img6.png')
     st.image(img,width=700)
     st.text("")
     st.text("")
@@ -50,17 +50,17 @@ def display_about():
     - Open Source
     - Supports Ml/DL models seamlessly
     """)
-
-    """### gif from local file"""
-    file_ = open("vid2.gif", "rb")
-    contents = file_.read()
-    data_url = base64.b64encode(contents).decode("utf-8")
-    file_.close()
-
-    st.markdown(
-        f'<img src="data:image/gif;base64,{data_url}" alt="cat gif" width=700>',
-        unsafe_allow_html=True,
-    )
+    # st.text("")
+    # """### gif from local file"""
+    # file_ = open("vid2.gif", "rb")
+    # contents = file_.read()
+    # data_url = base64.b64encode(contents).decode("utf-8")
+    # file_.close()
+    #
+    # st.markdown(
+    #     f'<img src="data:image/gif;base64,{data_url}" alt="cat gif" width=700>',
+    #     unsafe_allow_html=True,
+    # )
     st.text("")
     st.text("")
     st.markdown('## Watch how HCL aims to become a Global Leader in the AI space')

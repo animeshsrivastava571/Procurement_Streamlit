@@ -11,6 +11,7 @@ init_notebook_mode(connected=True)
 import plotly
 import plotly.graph_objs as go
 import os
+import deepAr
 import warnings
 from fbprophet import Prophet
 # from fbprophet.plot import add_changepoints_to_plot
@@ -18,7 +19,7 @@ from fbprophet import Prophet
 # from fbprophet.diagnostics import performance_metrics
 # from fbprophet.plot import plot_cross_validation_metric
 import matplotlib.pyplot as plt
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
 plt.style.use('seaborn')
 
 
@@ -26,7 +27,7 @@ plt.style.use('seaborn')
 #     st.title('About')
 #     st.markdown('---')
 #     #Display About section
-
+# @st.cache(suppress_st_warning=True)
 def summary_plots(df_final):
     #Running Boxplot on Warehouse J
 
@@ -122,7 +123,7 @@ def summary_plots(df_final):
         x = pred_ci.index,
         y = pred_ci.iloc[:, 1],
         mode = 'lines',
-        name = 'CI Upper Limit',
+        name = 'CI upper limit',
         text= pred_ci.iloc[:, 0])
 
 
@@ -130,7 +131,7 @@ def summary_plots(df_final):
         x = pred.predicted_mean.index,
         y = pred.predicted_mean,
         mode = 'lines',
-        name = 'Predicted Values',
+        name = 'predicted values',
         text= predictions,
         fill = 'tonexty'
     )
@@ -139,7 +140,7 @@ def summary_plots(df_final):
         x = pred_ci.index,
         y = pred_ci.iloc[:, 0],
         mode = 'lines',
-        name = 'CI Lower Limit',
+        name = 'CI lower limit',
         text= pred_ci.iloc[:, 0],
         fill = 'tonexty')
 
@@ -149,7 +150,7 @@ def summary_plots(df_final):
         x = df_warha['2015-06':].index,
         y = df_warha['2015-06':],
         mode = 'lines',
-        name = 'Observed Values',
+        name = 'actual demand quantity',
         text= df_warha['2015-06':]
     #     fill = 'tonexty'
     )
@@ -165,7 +166,7 @@ def summary_plots(df_final):
         x =pred_ci1.index,
         y = pred_ci1.iloc[:, 1],
         mode = 'lines',
-        name = 'Upper CI',
+        name = 'upper CI',
     #     fill = 'tonexty'
 
 
@@ -176,14 +177,14 @@ def summary_plots(df_final):
         x =pred_uc.predicted_mean.index,
         y = pred_uc.predicted_mean,
         mode = 'lines',
-        name = 'Forecast',
+        name = 'forecast',
         fill = 'tonexty')
 
     trace6 = go.Scatter(
         x =pred_ci1.index,
         y = pred_ci1.iloc[:, 0],
         mode = 'lines',
-        name = 'Lower CI',
+        name = 'lower CI',
         fill = 'tonexty'
 
 
@@ -213,7 +214,7 @@ def summary_plots(df_final):
     df_forecast = prophet.predict(future)
 
     trace = go.Scatter(
-        name = 'Actual Demand Quantity',
+        name = 'actual demand quantity',
         mode = 'markers',
         x = list(df_j['ds']),
         y = list(df_j['y']),
@@ -224,7 +225,7 @@ def summary_plots(df_final):
         )
     )
     trace1 = go.Scatter(
-        name = 'trend',
+        name = 'predicted values',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat']),
@@ -234,7 +235,7 @@ def summary_plots(df_final):
         )
     )
     upper_band = go.Scatter(
-        name = 'upper band',
+        name = 'CI upper limit',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat_upper']),
@@ -244,14 +245,14 @@ def summary_plots(df_final):
         # opacity=0.1
     )
     lower_band = go.Scatter(
-        name= 'lower band',
+        name= 'CI lower limit',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat_lower']),
         line= dict(color='#1705ff')
     )
     tracex = go.Scatter(
-        name = 'Actual price',
+        name = 'actual demand quantity',
        mode = 'markers',
        x = list(df_j['ds']),
        y = list(df_j['y']),
@@ -346,7 +347,7 @@ def EDA_Warehouse_Demnds(df_final):
     data = [trace0, trace1, trace2, trace3]
 
 
-    layout = dict(title = 'Warehouse Demands - Daily',
+    layout = dict(title = 'Warehouse Demand - Daily',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
@@ -401,7 +402,7 @@ def EDA_Warehouse_Demnds(df_final):
     data = [trace0, trace1, trace2, trace3]
 
 
-    layout = dict(title = 'Warehouse Demands - Weekly',
+    layout = dict(title = 'Warehouse Demand - Weekly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
@@ -454,7 +455,7 @@ def EDA_Warehouse_Demnds(df_final):
     data = [trace0, trace1, trace2, trace3]
 
 
-    layout = dict(title = 'Warehouse Demands - Monthly',
+    layout = dict(title = 'Warehouse Demand - Monthly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
@@ -743,7 +744,11 @@ def ARIMA_model(df_final):
                                     enforce_stationarity=False,
                                     enforce_invertibility=False)
     results = mod.fit()
-    st.write(pd.DataFrame(results.summary().tables[1]),header=None)
+    df_results=(pd.DataFrame(results.summary().tables[1]))
+    header=df_results.iloc[0]
+    df_results.columns=header
+    df_results =df_results.iloc[1:,:]
+    st.table(df_results)
 
     results.plot_diagnostics(figsize=(20, 12))
     st.pyplot()
@@ -1040,7 +1045,7 @@ def demand_forecast(file_csv):
     st.write('You selected `%s`' % selected_filename + '. To perform operations on this file, select your desired operation')
     df_final = pd.read_csv(selected_filename,parse_dates=['Date'],infer_datetime_format=True)
 
-    buttons = ['View EDA','View Seasonality' ,'Forecast using SARIMA','Forecast using FbProphet','Summary']
+    buttons = ['View EDA','View Seasonality' ,'Forecast using SARIMA','Forecast using FbProphet','Forecast using DeepAR','Summary']
     check=st.selectbox('Select Operation', buttons, index=0, key=None)
 
     if check==('View EDA'):
@@ -1055,6 +1060,9 @@ def demand_forecast(file_csv):
     if check==('Forecast using FbProphet'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
         prophet(df_final)
+    if check==('Forecast using DeepAR'):
+        st.spinner('Execution has started, you can monitor the stats in the command prompt.')
+        deepAr.forecast()
 
     if check==('Summary'):
         st.spinner('Execution has started, you can monitor the stats in the command prompt.')
@@ -1088,8 +1096,8 @@ def main():
     if menu_sel == 'Category Management':
         # st.markdown('# Category Management')
         html_temp = """
-        <div style="background-color:#7DCEA0;padding:10px">
-        <h2 style="color:black;text-align:center;">Category Management </h2>
+        <div style="background-color:#8E1047;padding:10px">
+        <h2 style="color:white;text-align:center;">Category Management </h2>
            </div>
         """
         st.markdown(html_temp,unsafe_allow_html=True)
