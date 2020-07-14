@@ -13,10 +13,10 @@ import plotly.graph_objs as go
 import os
 import warnings
 from fbprophet import Prophet
-from fbprophet.plot import add_changepoints_to_plot
-from fbprophet.diagnostics import cross_validation
-from fbprophet.diagnostics import performance_metrics
-from fbprophet.plot import plot_cross_validation_metric
+# from fbprophet.plot import add_changepoints_to_plot
+# from fbprophet.diagnostics import cross_validation
+# from fbprophet.diagnostics import performance_metrics
+# from fbprophet.plot import plot_cross_validation_metric
 import matplotlib.pyplot as plt
 warnings.filterwarnings("ignore")
 plt.style.use('seaborn')
@@ -39,7 +39,7 @@ def summary_plots(df_final):
         traces.append(trace)
 
     layout = go.Layout(
-    title='Order Demand Boxplot Across Different Warehouses',
+    title='Order Demand Boxplot Across Different Warehouses - Weekly',
     yaxis=dict(
         autorange=True, showgrid=True, zeroline=True,
         gridcolor='rgb(233,233,233)', zerolinecolor='rgb(255, 255, 255)',
@@ -102,40 +102,7 @@ def summary_plots(df_final):
     predictions = results.predict(start, end,
                                  typ = 'levels').rename("Predictions")
 
-    # trace0 = go.Scatter(
-    #     x = predictions.index,
-    #     y = predictions,
-    #     mode = 'lines+markers',
-    #     name = 'Predicted Values',
-    #     text= predictions
-    #
-    #
-    # )
-    #
-    # trace1 = go.Scatter(
-    #     x = test['Order_Demand_Whse_J'].index,
-    #     y = test['Order_Demand_Whse_J'],
-    #     mode = 'lines+markers',
-    #     name = 'Actual Values',
-    #     text= predictions
-    #
-    #
-    # )
-    #
-    # data = [trace0, trace1]
-    #
-    #
-    # layout = dict(title = 'Warehouse J - Actual vs Predicted',
-    #               xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
-    #               yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
-    #               width=900,
-    #             height=500
-    #
-    #              )
-    # fig = dict(data = data, layout = layout)
-    # st.plotly_chart(fig)
 
-    from sklearn.metrics import mean_squared_error
     from statsmodels.tools.eval_measures import rmse
 
     # Calculate root mean squared error
@@ -226,7 +193,7 @@ def summary_plots(df_final):
     data = [trace0, trace1,trace2,trace3,trace4,trace5,trace6]
 
 
-    layout = dict(title = 'Warehouse J Forecast SARIMA',
+    layout = dict(title = 'Warehouse J Forecast SARIMA - Weekly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
@@ -295,7 +262,7 @@ def summary_plots(df_final):
     )
     data = [trace1, lower_band, upper_band, trace]
 
-    layout = dict(title='Order Demand Forecasting FbProphet- Warehouse J',
+    layout = dict(title='Warehouse J forecast FbProphet - Weekly',
                  xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
                   yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True),
                   width=900,
@@ -323,7 +290,7 @@ def EDA_Warehouse_Demnds(df_final):
         traces.append(trace)
 
     layout = go.Layout(
-    title='Order Demand Boxplot Across Different Warehouses',
+    title=' Weekly Order Demand Boxplot Across Different Warehouses',
     yaxis=dict(
         autorange=True, showgrid=True, zeroline=True,
         gridcolor='rgb(233,233,233)', zerolinecolor='rgb(255, 255, 255)',
@@ -337,6 +304,8 @@ def EDA_Warehouse_Demnds(df_final):
 
     fig = go.Figure(data=traces, layout=layout)
     st.plotly_chart(fig)
+
+    # st.text("From the above box-plot,Warehouse J has the maximum demand ")
 
     # Create traces
     trace0 = go.Scatter(
@@ -742,7 +711,7 @@ def seasonality(df_final):
 
 def ARIMA_model(df_final):
 
-    st.markdown('## SARIMA on Warehouse J')
+    st.markdown('## SARIMA on Warehouse J - Weekly Demand')
     df_month = df_final.resample('M', on = 'Date').sum()
     df_month = df_month.reset_index()
 
@@ -810,7 +779,7 @@ def ARIMA_model(df_final):
     data = [trace0, trace1]
 
 
-    layout = dict(title = 'Warehouse J - Actual vs Predicted',
+    layout = dict(title = 'Warehouse J - Actual vs Predicted - Weekly Demand',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
@@ -913,7 +882,7 @@ def ARIMA_model(df_final):
     data = [trace0, trace1,trace2,trace3,trace4,trace5,trace6]
 
 
-    layout = dict(title = 'Warehouse J Forecast',
+    layout = dict(title = 'Warehouse J Forecast - Weekly',
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
@@ -929,13 +898,13 @@ def prophet(df_final):
     # df = pd.read_csv(df_final,parse_dates=['Date'],infer_datetime_format=True)
     # df= df.drop('Unnamed: 0',axis=1)
 
-    df_warehouse_s = df_final[['Date', 'Order_Demand_Whse_J']]
+    df_warehouse_s = df_final[['Date', 'Order_Demand_Whse_S']]
     df_s = df_warehouse_s.rename(columns={"Date": "ds", "Order_Demand_Whse_S": "y"})
     prophet = Prophet(yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False,)
     prophet.fit(df_s)
     future = prophet.make_future_dataframe(periods=12, freq='M')
     df_forecast = prophet.predict(future)
-    st.markdown('## Demand Forecasting using FbProphet')
+    st.markdown('## Demand Forecasting using FbProphet - Weekly')
     trace = go.Scatter(
         name = 'Actual Demand Quantity',
         mode = 'markers',
@@ -948,7 +917,7 @@ def prophet(df_final):
         )
     )
     trace1 = go.Scatter(
-        name = 'trend',
+        name = 'predicted',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat']),
@@ -958,7 +927,7 @@ def prophet(df_final):
         )
     )
     upper_band = go.Scatter(
-        name = 'upper band',
+        name = 'CI upper limit',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat_upper']),
@@ -966,7 +935,7 @@ def prophet(df_final):
         fill = 'tonexty'
     )
     lower_band = go.Scatter(
-        name= 'lower band',
+        name= 'CI lower limit',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat_lower']),
@@ -1014,7 +983,7 @@ def prophet(df_final):
         )
     )
     trace1 = go.Scatter(
-        name = 'trend',
+        name = 'predicted',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat']),
@@ -1024,7 +993,7 @@ def prophet(df_final):
         )
     )
     upper_band = go.Scatter(
-        name = 'upper band',
+        name = 'CI upper limit',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat_upper']),
@@ -1034,7 +1003,7 @@ def prophet(df_final):
         # opacity=0.1
     )
     lower_band = go.Scatter(
-        name= 'lower band',
+        name= 'CI lower limit',
         mode = 'lines',
         x = list(df_forecast['ds']),
         y = list(df_forecast['yhat_lower']),
@@ -1127,9 +1096,9 @@ def main():
         cat_level1 =['Category Analytics','Spend Analytics','Savings Lifecycle Analytics']
         a = st.radio('', cat_level1,index=0,key=None)
         if a == 'Category Analytics':
-            cat_level2 =['Classification','Consumption Analysis','None']
+            cat_level2 =['Classification','Consumption Analysis']
 
-            b=st.selectbox('Select Sublevel', cat_level2,index=0)
+            b=st.selectbox('Select Sublevel', cat_level2,index=1)
             st.write('You selected `%s`' % b)
 
             if b == 'Consumption Analysis':
