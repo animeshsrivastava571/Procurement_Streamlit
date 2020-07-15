@@ -711,6 +711,19 @@ def seasonality(df_final):
     return 0
 
 def ARIMA_model(df_final):
+    st.markdown("## About SARIMA")
+    st.markdown(
+        """
+        In statistics and econometrics, and in particular in time series analysis, an autoregressive 
+        integrated moving average (ARIMA) model is a generalization of an autoregressive moving average (ARMA) 
+        model. Both of these models are fitted to time series data either to better understand the data or to 
+        predict future points in the series (forecasting). ARIMA models are applied in some cases where 
+        data show evidence of non-stationarity, where an initial differencing step 
+        (corresponding to the "integrated" part of the model) can be applied one or more times to 
+        eliminate the non-stationarity. **SARIMA** is an extension of the ARIMA model which includes the seasonality
+        component
+        """
+    )
 
     st.markdown('## SARIMA on Warehouse J - Weekly Demand')
     df_month = df_final.resample('M', on = 'Date').sum()
@@ -902,6 +915,18 @@ def prophet(df_final):
 
     # df = pd.read_csv(df_final,parse_dates=['Date'],infer_datetime_format=True)
     # df= df.drop('Unnamed: 0',axis=1)
+    st.markdown("## About FbProphet")
+    st.markdown(
+        """
+        Developed by **Facebook's core Data Science team**, Prophet is a procedure for forecasting time series data based on an additive model where non-linear 
+        trends are fit with yearly, weekly, and daily seasonality, plus holiday effects. It works best
+         with time series that have strong seasonal effects and several seasons of historical data. 
+         Prophet is robust to missing data and shifts in the trend, and typically handles outliers well.
+         - Accurate and fast
+         - Fully automatic
+         - Tunable Forecast
+        """
+    )
 
     df_warehouse_s = df_final[['Date', 'Order_Demand_Whse_S']]
     df_s = df_warehouse_s.rename(columns={"Date": "ds", "Order_Demand_Whse_S": "y"})

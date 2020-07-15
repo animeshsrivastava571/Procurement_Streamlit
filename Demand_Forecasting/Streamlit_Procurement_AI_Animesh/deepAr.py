@@ -7,6 +7,20 @@ import streamlit as st
 import pandas as pd
 
 def forecast():
+
+    st.markdown("## About DeepAR")
+    st.markdown(
+        """
+        The **Amazon SageMaker DeepAR** forecasting algorithm is a supervised learning algorithm for forecasting 
+        scalar (one-dimensional) time series using recurrent neural networks (RNN). Classical forecasting 
+        methods, such as autoregressive integrated moving average (ARIMA) or exponential smoothing (ETS), 
+        fit a single model to each individual time series. They then use that model to extrapolate the time 
+        series into the future. The basic algorithm uses **Recurrent Neural Networks**
+
+        
+        
+        """
+    )
     st.markdown('## Monthly Forecast using DeepAR')
     df = pd.read_csv('Warehouse_monthly.csv')
     df['Date'] = pd.to_datetime(df['Date'])
@@ -281,11 +295,56 @@ def forecast():
     evaluator = Evaluator(quantiles=[0.1, 0.5, 0.9])
     agg_metrics, item_metrics = evaluator(iter(tss), iter(forecasts), num_series=len(test_data))
 
+    # def plot_prob_forecasts1(ts_entry, forecast_entry, wareh_name):
+    #     plot_length = 150
+    #     prediction_intervals = (50.0, 90.0)
+    #     legend = ["observations", "median prediction"] + [f"{k}% prediction interval" for k in prediction_intervals][::-1]
+    #
+    #     fig, ax = plt.subplots(1, 1, figsize=(30, 16))
+    #     ts_entry[-plot_length:].plot(ax=ax)  # plot the time series
+    #     forecast_entry.plot(prediction_intervals=prediction_intervals, color='g')
+    #     plt.grid(which="major")
+    #     plt.legend(legend, loc="upper left",fontsize=40)
+    #     plt.title(wareh_name,fontsize=50)
+    #     plt.xlabel('Date',fontsize=40)
+    #     plt.ylabel('Order Demand',fontsize=40)
+    #     plt.xticks(fontsize=30)
+    #     plt.yticks(fontsize=30)
+    #     st.pyplot()
+    #
+    # # rcParams['figure.figsize'] = 8, 8
+    # def my_func_week(df_wa, wareh_name):
+    #     training_data = ListDataset(
+    #     [{"start": df_wa.index[0], "target": df_wa.y[:"2016-01-03"]}],
+    #     freq = "W")
+    #     estimator = DeepAREstimator(freq="W", prediction_length=52, trainer=Trainer(epochs=10))
+    #     predictor = estimator.train(training_data=training_data)
+    #     test_data = ListDataset(
+    #     [{"start": df_wa.index[0], "target": df_wa.y[:"2017-01-01"]}],
+    #     freq = "W")
+    #     forecast_it, ts_it = make_evaluation_predictions(dataset=test_data,  predictor=predictor, num_samples=52,)
+    #     forecasts = list(forecast_it)
+    #     tss = list(ts_it)
+    #     ts_entry = tss[0]
+    #     forecast_entry = forecasts[0]
+    #     plot_prob_forecasts1(ts_entry, forecast_entry, wareh_name)
+    #     evaluator = Evaluator(quantiles=[0.1, 0.5, 0.9])
+    #     agg_metrics, item_metrics = evaluator(iter(tss), iter(forecasts), num_series=len(test_data))
+    #     forecasts = list(forecast_it)
+    #     mape = agg_metrics['MAPE']
+    #     return mape
+    #
+    #     df = pd.read_csv('warehouse_weekly_data.csv', index_col = 0)
+    #     df['Date'] = pd.to_datetime(df['Date'])
+    #     df[df['Date'] >='2015-12-26']
+    #     df_wj = df[['Date', 'Order_Demand_Whse_J']]
+    #     df_wj = df_wj.rename(columns={"Order_Demand_Whse_J": "y"})
+    #     df_wj = df_wj.set_index('Date')
+    #     wh = 'Warehouse J forecast'
+    #     mape_a = my_func_week(df_wj, wh)
 
-    x = agg_metrics['MAPE']
-    return 0
 
-    # print("Success")
+    print("Success")
 
 
 
