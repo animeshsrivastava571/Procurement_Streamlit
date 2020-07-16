@@ -355,6 +355,7 @@ def EDA_Warehouse_Demnds(df_final):
 
                  )
     fig = dict(data = data, layout = layout)
+
     st.plotly_chart(fig)
 
 
@@ -721,7 +722,7 @@ def ARIMA_model(df_final):
         data show evidence of non-stationarity, where an initial differencing step 
         (corresponding to the "integrated" part of the model) can be applied one or more times to 
         eliminate the non-stationarity. **SARIMA** is an extension of the ARIMA model which includes the seasonality
-        component
+        component.
         """
     )
 
@@ -1067,7 +1068,7 @@ def demand_forecast(file_csv):
     print(file_csv)
 
     selected_filename = st.selectbox('Load a file to execute',file_csv)
-    st.write('You selected `%s`' % selected_filename + '. To perform operations on this file, select your desired operation')
+    st.write('You selected `%s`' % selected_filename + '. To perform analysis on this file, select your desired operation')
     df_final = pd.read_csv(selected_filename,parse_dates=['Date'],infer_datetime_format=True)
 
     buttons = ['View EDA','View Seasonality' ,'Forecast using SARIMA','Forecast using FbProphet','Forecast using DeepAR','Summary']

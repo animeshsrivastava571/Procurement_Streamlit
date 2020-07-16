@@ -15,8 +15,14 @@ def forecast():
         scalar (one-dimensional) time series using recurrent neural networks (RNN). Classical forecasting 
         methods, such as autoregressive integrated moving average (ARIMA) or exponential smoothing (ETS), 
         fit a single model to each individual time series. They then use that model to extrapolate the time 
-        series into the future. The basic algorithm uses **Recurrent Neural Networks**
-
+        series into the future. The basic algorithm uses **Recurrent Neural Networks.**
+        
+        In many applications, however, you have many similar time series across a set of cross-sectional units. For example, 
+        you might have time series groupings for demand for different products, server loads, and requests for webpages. 
+        For this type of application, you can benefit from training a single model jointly over all of the time series. 
+        DeepAR takes this approach. When your dataset contains hundreds of related time series, DeepAR outperforms the 
+        standard ARIMA and ETS methods. You can also use the trained model to generate forecasts for new time series 
+        that are similar to the ones it has been trained on.
         
         
         """
@@ -291,9 +297,9 @@ def forecast():
     # In[104]:
 
 
-    from gluonts.evaluation import Evaluator
-    evaluator = Evaluator(quantiles=[0.1, 0.5, 0.9])
-    agg_metrics, item_metrics = evaluator(iter(tss), iter(forecasts), num_series=len(test_data))
+    # from gluonts.evaluation import Evaluator
+    # evaluator = Evaluator(quantiles=[0.1, 0.5, 0.9])
+    # agg_metrics, item_metrics = evaluator(iter(tss), iter(forecasts), num_series=len(test_data))
 
     # def plot_prob_forecasts1(ts_entry, forecast_entry, wareh_name):
     #     plot_length = 150

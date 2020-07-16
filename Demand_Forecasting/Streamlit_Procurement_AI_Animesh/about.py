@@ -5,7 +5,7 @@ import base64
 def display_about():
     st.title('Procurement.AI')
     st.markdown('<style>h1{color: #B51E60 ;}</style>', unsafe_allow_html=True)
-    st.text('Created by animesh.sr@hcl.com')
+    st.text('Created by Animesh Srivastava')
     # img = Image.open('Img2.jpg')
     # st.image(img,use_column_width=True)
     file_ = open("giphy1.gif", "rb")
@@ -42,7 +42,7 @@ def display_about():
 
     st.text("")
     st.text("")
-    st.markdown("## This app is created using streamlit")
+    st.markdown("## This app is developed using streamlit")
     st.markdown("""
     Streamlit’s open-source app framework is the easiest way for data scientists and machine learning engineers 
     to create beautiful, performant apps in only a few hours!  
@@ -63,10 +63,10 @@ def display_about():
     # )
     st.text("")
     st.text("")
-    st.markdown('## Watch how HCL aims to become a Global Leader in the AI space')
+    st.markdown("## Watch How is AI Disrupting Procurement ")
     st.text("")
-    st.video('https://www.youtube.com/watch?v=b-U9uIMFT2U&feature=youtu.be')
-
+    # st.video('https://www.youtube.com/watch?v=b-U9uIMFT2U&feature=youtu.be')
+    st.video('https://youtu.be/tBBxn_ZHIZY',start_time=80)
 
 def display_sidebar():
     st.sidebar.markdown('---')
