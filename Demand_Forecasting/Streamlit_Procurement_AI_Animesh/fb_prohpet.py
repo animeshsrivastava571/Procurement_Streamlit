@@ -3,11 +3,8 @@ import streamlit as st
 from fbprophet import Prophet
 import plotly.graph_objs as go
 import cufflinks as cf
-from plotly.tools import make_subplots
-from plotly.offline import download_plotlyjs, plot,iplot
 cf.go_offline()
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-import random
+
 fig = make_subplots(rows=1, cols=2)
 
 st.title('Summary')

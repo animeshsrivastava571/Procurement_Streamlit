@@ -3,31 +3,13 @@ import streamlit as st
 import about
 import itertools
 import statsmodels.api as sm #for decomposing the trends, seasonality etc.
-from statsmodels.tsa.statespace.sarimax import SARIMAX #the big daddy
-from plotly.offline import iplot, init_notebook_mode
-import cufflinks
-cufflinks.go_offline(connected=True)
-init_notebook_mode(connected=True)
-import plotly
 import plotly.graph_objs as go
 import os
 import deepAr
-import warnings
 from fbprophet import Prophet
-# from fbprophet.plot import add_changepoints_to_plot
-# from fbprophet.diagnostics import cross_validation
-# from fbprophet.diagnostics import performance_metrics
-# from fbprophet.plot import plot_cross_validation_metric
-import matplotlib.pyplot as plt
-# warnings.filterwarnings("ignore")
-plt.style.use('seaborn')
 
 
-# def main_about():
-#     st.title('About')
-#     st.markdown('---')
-#     #Display About section
-# @st.cache(suppress_st_warning=True)
+
 def summary_plots(df_final):
     #Running Boxplot on Warehouse J
 
@@ -274,14 +256,10 @@ def summary_plots(df_final):
     st.plotly_chart(fig)
     return 0
 
-
-
-
-
 def EDA_Warehouse_Demnds(df_final):
 
     st.markdown('## Plotting the **Time Series** Data for warehouses')
-
+    # Plot 1: BoxPlot
     lst_warehouse=list(df_final.columns)[2:]
     traces = []
 
@@ -299,16 +277,20 @@ def EDA_Warehouse_Demnds(df_final):
     xaxis=dict(tickangle=15),
     margin=dict(l=40, r=30, b=80, t=100), showlegend=False,
     width=900,
-                height=500
+                height=500,
+    hoverlabel=dict(
+        bgcolor="white",
+        font_size=10,
+        font_family="Rockwell"
+
+    )
     )
 
 
-    fig = go.Figure(data=traces, layout=layout)
-    st.plotly_chart(fig)
+    fig1 = go.Figure(data=traces, layout=layout)
+    st.plotly_chart(fig1)
 
-    # st.text("From the above box-plot,Warehouse J has the maximum demand ")
-
-    # Create traces
+    #Plot 2: Simple Time Series
     trace0 = go.Scatter(
         x = df_final['Date'],
         y = df_final['Order_Demand_Whse_A'],
@@ -351,52 +333,58 @@ def EDA_Warehouse_Demnds(df_final):
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
-                  height=500
+                  height=500,
+                  hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
 
-                 )
-    fig = dict(data = data, layout = layout)
+    )
 
-    st.plotly_chart(fig)
+    )
+    fig2 = dict(data = data, layout = layout)
 
+    st.plotly_chart(fig2)
 
-    df_resamp = df_final.resample('W', on = 'Date').sum()
-    df_resamp = df_resamp.reset_index()
+    #Plot 3: Weekly Simple Time Series
+    df_week = df_final.resample('W', on = 'Date').sum()
+    df_week = df_week.reset_index()
 
     # st.header('Weekly Warhouse Demand')
 
     # Create traces
     trace0 = go.Scatter(
-        x = df_resamp['Date'],
-        y = df_resamp['Order_Demand_Whse_A'],
+        x = df_week['Date'],
+        y = df_week['Order_Demand_Whse_A'],
         mode = 'lines',
         name = 'Warehouse A',
-        text= df_resamp['Order_Demand_Whse_A']
+        text= df_week['Order_Demand_Whse_A']
 
 
     )
 
     trace1 = go.Scatter(
-        x = df_resamp['Date'],
-        y = df_resamp['Order_Demand_Whse_C'],
+        x = df_week['Date'],
+        y = df_week['Order_Demand_Whse_C'],
         mode = 'lines',
         name = 'Warehouse C',
-        text= df_resamp['Order_Demand_Whse_C']
+        text= df_week['Order_Demand_Whse_C']
     )
 
     trace2 = go.Scatter(
-        x = df_resamp['Date'],
-        y = df_resamp['Order_Demand_Whse_J'],
+        x = df_week['Date'],
+        y = df_week['Order_Demand_Whse_J'],
         mode = 'lines',
         name = 'Warehouse J',
-        text= df_resamp['Order_Demand_Whse_J']
+        text= df_week['Order_Demand_Whse_J']
     )
 
     trace3 = go.Scatter(
-        x = df_resamp['Date'],
-        y = df_resamp['Order_Demand_Whse_S'],
+        x = df_week['Date'],
+        y = df_week['Order_Demand_Whse_S'],
         mode = 'lines',
         name = 'Warehouse S',
-        text= df_resamp['Order_Demand_Whse_S']
+        text= df_week['Order_Demand_Whse_S']
 
     )
 
@@ -407,13 +395,19 @@ def EDA_Warehouse_Demnds(df_final):
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
-                  height=500
+                  height=500,
+                  hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    )
 
                  )
-    fig = dict(data = data, layout = layout)
-    st.plotly_chart(fig)
+    fig3 = dict(data = data, layout = layout)
+    st.plotly_chart(fig3)
 
-    # st.header ('Monthly Warehouse Demand')
+    # Plot 4: Monthly Time Series
 
     df_month = df_final.resample('M', on = 'Date').sum()
     df_month = df_month.reset_index()
@@ -460,15 +454,18 @@ def EDA_Warehouse_Demnds(df_final):
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
-                  height=500
+                  height=500,
+                  hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    )
 
                  )
-    fig = dict(data = data, layout = layout)
-    st.plotly_chart(fig)
-
-
-
-    return 0
+    fig4 = dict(data = data, layout = layout)
+    st.plotly_chart(fig4)
+    return (fig1,fig2,fig3,fig4)
 
 def seasonality(df_final):
 
@@ -481,234 +478,81 @@ def seasonality(df_final):
 
     st.markdown(' ## Seasonality Plot for different warehouses')
 
+    def plot_seasonality(decomposition,whouse):
+
+        trace0 = go.Scatter(
+            x = decomposition.observed.index,
+            y = decomposition.observed,
+            mode = 'lines',
+            name = 'Observed',
+            text= decomposition.observed
+
+
+        )
+
+        trace1 = go.Scatter(
+            x = decomposition.trend.index,
+            y = decomposition.trend,
+            mode = 'lines',
+            name = 'Trend',
+            text= decomposition.trend
+
+
+        )
+
+        trace2 = go.Scatter(
+            x = decomposition.seasonal.index,
+            y = decomposition.seasonal,
+            mode = 'lines',
+            name = 'Seasonal',
+            text= decomposition.seasonal
+
+
+        )
+
+        trace3 = go.Scatter(
+            x = decomposition.resid.index,
+            y = decomposition.resid,
+            mode = 'lines',
+            name = 'Residual',
+            text= decomposition.resid
+
+
+        )
+
+        data = [trace0, trace1, trace2, trace3]
+
+
+        layout = dict(title = 'Plot for Warehouse {} - Seasonality'.format(whouse),
+                      xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
+                      yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
+                      width=900,
+                      height=500,
+                      hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    )
+
+                     )
+        fig = dict(data = data, layout = layout)
+        st.plotly_chart(fig)
+        return 0
+
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_A'], model='additive')
-
-    trace0 = go.Scatter(
-        x = decomposition.observed.index,
-        y = decomposition.observed,
-        mode = 'lines',
-        name = 'Observed',
-        text= decomposition.observed
-
-
-    )
-
-    trace1 = go.Scatter(
-        x = decomposition.trend.index,
-        y = decomposition.trend,
-        mode = 'lines',
-        name = 'Trend',
-        text= decomposition.trend
-
-
-    )
-
-    trace2 = go.Scatter(
-        x = decomposition.seasonal.index,
-        y = decomposition.seasonal,
-        mode = 'lines',
-        name = 'Seasonal',
-        text= decomposition.seasonal
-
-
-    )
-
-    trace3 = go.Scatter(
-        x = decomposition.resid.index,
-        y = decomposition.resid,
-        mode = 'lines',
-        name = 'Residual',
-        text= decomposition.resid
-
-
-    )
-
-    data = [trace0, trace1, trace2, trace3]
-
-
-    layout = dict(title = 'Plot for Warehouse A - Seasonality',
-                  xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
-                  yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
-                  width=900,
-                  height=500
-
-                 )
-    fig = dict(data = data, layout = layout)
-    st.plotly_chart(fig)
-
-
-    # st.header('Seasonality Plot for Warehouse J')
+    plot_seasonality(decomposition,'A')
 
     # Create traces
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_J'], model='additive')
+    plot_seasonality(decomposition,'J')
 
-    trace0 = go.Scatter(
-        x = decomposition.observed.index,
-        y = decomposition.observed,
-        mode = 'lines',
-        name = 'Observed',
-        text= decomposition.observed
-
-
-    )
-
-    trace1 = go.Scatter(
-        x = decomposition.trend.index,
-        y = decomposition.trend,
-        mode = 'lines',
-        name = 'Trend',
-        text= decomposition.trend
-
-
-    )
-
-    trace2 = go.Scatter(
-        x = decomposition.seasonal.index,
-        y = decomposition.seasonal,
-        mode = 'lines',
-        name = 'Seasonal',
-        text= decomposition.seasonal
-
-
-    )
-
-    trace3 = go.Scatter(
-        x = decomposition.resid.index,
-        y = decomposition.resid,
-        mode = 'lines',
-        name = 'Residual',
-        text= decomposition.resid
-
-
-    )
-
-    data = [trace0, trace1, trace2, trace3]
-
-
-    layout = dict(title = 'Plot for Warehouse J - Seasonality',
-                  xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
-                  yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
-                  width=900,
-                  height=500
-
-                 )
-    fig = dict(data = data, layout = layout)
-    st.plotly_chart(fig)
-
-    # st.header('Seasonality Plot for Warehouse C')
-
-    # Create traces
-    decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_C'], model='additive')
-
-    trace0 = go.Scatter(
-        x = decomposition.observed.index,
-        y = decomposition.observed,
-        mode = 'lines',
-        name = 'Observed',
-        text= decomposition.observed
-
-
-    )
-
-    trace1 = go.Scatter(
-        x = decomposition.trend.index,
-        y = decomposition.trend,
-        mode = 'lines',
-        name = 'Trend',
-        text= decomposition.trend
-
-
-    )
-
-    trace2 = go.Scatter(
-        x = decomposition.seasonal.index,
-        y = decomposition.seasonal,
-        mode = 'lines',
-        name = 'Seasonal',
-        text= decomposition.seasonal
-
-
-    )
-
-    trace3 = go.Scatter(
-        x = decomposition.resid.index,
-        y = decomposition.resid,
-        mode = 'lines',
-        name = 'Residual',
-        text= decomposition.resid
-
-
-    )
-
-    data = [trace0, trace1, trace2, trace3]
-
-
-    layout = dict(title = 'Plot for Warehouse C - Seasonality',
-                  xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
-                  yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
-                  width=900,
-                  height=500
-
-                 )
-    fig = dict(data = data, layout = layout)
-    st.plotly_chart(fig)
-
-    # st.header('Seasonality Plot for Warehouse S')
-    # Create traces
     decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_S'], model='additive')
+    plot_seasonality(decomposition,'S')
 
-    trace0 = go.Scatter(
-        x = decomposition.observed.index,
-        y = decomposition.observed,
-        mode = 'lines',
-        name = 'Observed',
-        text= decomposition.observed
+    decomposition = sm.tsa.seasonal_decompose(df_month['Order_Demand_Whse_C'], model='additive')
+    plot_seasonality(decomposition,'C')
 
-
-    )
-
-    trace1 = go.Scatter(
-        x = decomposition.trend.index,
-        y = decomposition.trend,
-        mode = 'lines',
-        name = 'Trend',
-        text= decomposition.trend
-
-
-    )
-
-    trace2 = go.Scatter(
-        x = decomposition.seasonal.index,
-        y = decomposition.seasonal,
-        mode = 'lines',
-        name = 'Seasonal',
-        text= decomposition.seasonal
-
-
-    )
-
-    trace3 = go.Scatter(
-        x = decomposition.resid.index,
-        y = decomposition.resid,
-        mode = 'lines',
-        name = 'Residual',
-        text= decomposition.resid
-
-
-    )
-
-    data = [trace0, trace1, trace2, trace3]
-
-
-    layout = dict(title = 'Plot for Warehouse S - Seasonality',
-                  xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
-                  yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
-                  width=900,
-                  height=500
-
-                 )
-    fig = dict(data = data, layout = layout)
-    st.plotly_chart(fig)
     return 0
 
 def ARIMA_model(df_final):
@@ -745,14 +589,14 @@ def ARIMA_model(df_final):
     train = df_month.iloc[:len(df_month)-12]
     test = df_month.iloc[len(df_month)-12:]
 
-    for param in pdq:
-        for param_seasonal in seasonal_pdq:
-            mod = sm.tsa.statespace.SARIMAX(df_month['Order_Demand_Whse_J'], order=param, seasonal_order=param_seasonal, enforce_stationarity=False, enforce_invertibility=False)
-            results = mod.fit()
-            print('ARIMA{}x{}12 - AIC:{}'.format(param, param_seasonal, results.aic))
+    # for param in pdq:
+    #     for param_seasonal in seasonal_pdq:
+    #         mod = sm.tsa.statespace.SARIMAX(df_month['Order_Demand_Whse_J'], order=param, seasonal_order=param_seasonal, enforce_stationarity=False, enforce_invertibility=False)
+    #         results = mod.fit()
+    #         print('ARIMA{}x{}12 - AIC:{}'.format(param, param_seasonal, results.aic))
 
 
-    mod = sm.tsa.statespace.SARIMAX(train['Order_Demand_Whse_A'],
+    mod = sm.tsa.statespace.SARIMAX(train['Order_Demand_Whse_J'],
                                     order=(1, 1, 1),
                                     seasonal_order=(1, 1, 0, 12),
                                     enforce_stationarity=False,
@@ -802,7 +646,13 @@ def ARIMA_model(df_final):
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
-                height=500
+                height=500,
+                hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    )
 
                  )
     fig = dict(data = data, layout = layout)
@@ -905,7 +755,13 @@ def ARIMA_model(df_final):
                   xaxis= dict(title= 'Date',ticklen= 5,zeroline= False),
                   yaxis = dict(title= 'Warehouse Orders',ticklen=5,zeroline=False),
                   width=900,
-                height=500
+                height=500,
+                hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    )
 
                  )
     fig = dict(data = data, layout = layout)
@@ -914,8 +770,6 @@ def ARIMA_model(df_final):
 
 def prophet(df_final):
 
-    # df = pd.read_csv(df_final,parse_dates=['Date'],infer_datetime_format=True)
-    # df= df.drop('Unnamed: 0',axis=1)
     st.markdown("## About FbProphet")
     st.markdown(
         """
@@ -972,26 +826,22 @@ def prophet(df_final):
         y = list(df_forecast['yhat_lower']),
         line= dict(color='#1705ff')
     )
-    tracex = go.Scatter(
-        name = 'Actual price',
-       mode = 'markers',
-       x = list(df_s['ds']),
-       y = list(df_s['y']),
-       marker=dict(
-          color='black',
-          line=dict(width=2)
-       )
-    )
+
     data = [trace1, lower_band, upper_band, trace]
 
     layout = dict(title='Order Demand Forecasting - Warehouse S',
                  xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
                   yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True),
                    width=900,
-                height=500)
+                height=500,
+                  hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    ))
 
     fig=dict(data=data,layout=layout)
-    # plt.savefig('btc03.html')
     st.plotly_chart(fig)
 
 
@@ -1040,23 +890,20 @@ def prophet(df_final):
         y = list(df_forecast['yhat_lower']),
         line= dict(color='#1705ff')
     )
-    tracex = go.Scatter(
-        name = 'Actual price',
-       mode = 'markers',
-       x = list(df_j['ds']),
-       y = list(df_j['y']),
-       marker=dict(
-          color='black',
-          line=dict(width=2)
-       )
-    )
+
     data = [trace1, lower_band, upper_band, trace]
 
     layout = dict(title='Order Demand Forecasting - Warehouse J',
                  xaxis=dict(title = 'Dates', ticklen=2, zeroline=True),
                   yaxis=dict(title = 'Order Quantity', ticklen=2, zeroline=True),
                   width=900,
-                height=500)
+                height=500,
+                  hoverlabel=dict(
+                                    bgcolor="white",
+                                    font_size=10,
+                                    font_family="Rockwell"
+
+    ))
 
     fig=dict(data=data,layout=layout)
     # plt.savefig('btc03.html')
